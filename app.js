@@ -1,66 +1,160 @@
+/**
+ *
+ *  Author: Troy Barnard and Spencer Walden
+ *  Date: August 15th, 2017
+ *  Description: A Discord chat bot intended to mimic our mutual friend, Keefe Koenig
+ *
+ */
+
+// Imports
 var Discord = require('discord.io');
-var bot = new Discord.Client({
-    autorun: true,
-    token: "MzQ3MDk5OTI1MzQ5MjY5NTI0.DHTeBA.5SXpt3kCbQkwlpLmJlA0Q_BTatQ"
-});
 
-bot.on('ready', function(event) {
-    console.log('Logged in as %s - %s\n', bot.username, bot.id);
-});
+// Constants
+const memeArray = [
+  getFBPicture(true, [10322445, 736571016365927, 6122631404316564888], 'b32393adff90f64d4c11861a285a87a9', '59F14A3C'),
+  getFBPicture(true, [999912, 657266644296365, 1796786678], '665e2b0c0fb6d80772d087b386014b0c', '5A250558'),
+	getFBPicture(true, [1471138, 657266404296389, 1462432710], 'b1905ba1377f9207343fd1eebfc97ac6', '5A2FF8AC'),
+	getFBPicture(true, [1484735, 657266347629728, 1591046568], '99741f36e45fad3300f0497ec96a4bea', '5A350E3F'),
+	getFBPicture(true, [1460279, 657261414296888, 1409941056], '44c48ab6188d141c491614c9a42c9b88', '5A2A7C58'),
+	getFBPicture(true, [575970, 537242709632093, 622054354], '4f83aa889fa627299149cecd2bf82dfc', '59EB15D1'),
+  getFBPicture(true, [578620, 536201723069525, 1049133043], '975d06a25e364ddb1602d4db889b0451', '5A2A572B'),
+  getFBPicture(true, [600190, 535790019777362, 864278213], '7eeeedc214f6b79892538ad40de5ac70', '5A38ABD6'),
+	getFBPicture(true, [644333, 534981119858252, 2023321938], '92668ebd73bad5f35a12ba0463dfdb49', '5A31AF7F'),
+	getFBPicture(true, [295657, 534629519893412, 1735171618], '818ce513ec886d6c4e72de2b64d63094', '5A2D651A'),
+	getFBPicture(true, [224637, 449150045108027, 1829597251], '9a1dedc60bb94aedd5f1763996dd989c', '5A2D7DF0'),
+	getFBPicture(true, [553471, 441861062503592, 643853451], 'bfaf06a08ae8d1630ae95fa931123048', '5A29D333'),
+  getFBPicture(true, [602526, 441526475870384, 907188007], '9b4164f5a64d818f6f48eec9a90d0e8c', '5A1B2185'),
+	getFBPicture(true, [547738, 441187152570983, 1626969497], 'ad1a9805b6e966a326f63a117046eadd', '5A299526'),
+	getFBPicture(true, [389098, 439524819403883, 1192391394], '5947d4035202a9cf4fafc60c4d77e548', '5A2811A8'),
+	getFBPicture(true, [409683, 438662036156828, 612090146], '19d0a243e9ec8385c008327cac91bc4f', '59F256C4'),
+	getFBPicture(true, [580857, 438633049493060, 1151942041], '8dbf5b42b6b8ef0d23f84bc7db2a7e6d', '5A1BFE81'),
+	getFBPicture(true, [487190, 438337252855973, 1308119772], '26c05a7f52a086c996aa0ac7f266e823', '5A1D707B'),
+	getFBPicture(true, [534513, 438333289523036, 1322988843], '3c2818e5f537fcb8b963dee9db3f65cc', '5A294A44'),
+	getFBPicture(true, [251812, 438330179523347, 2051057899], '5d9c2c37633d54f49033c220b1529b11', '5A2B706B'),
+	getFBPicture(false, [330822, 440572679299097, 604568631], 'dc20ef0b403d30f9c5e20407e32d770c', '5A3205A6'),
+	getFBPicture(false, [334113, 440237609332604, 802765931], '820aae37e5b0d63679d704d94a2887b2', '5A1F21E2'),
+	getFBPicture(false, [339383, 439894406033591, 1104072709], '2c4e6d472de9f811adbb304b87f65b62', '5A1F52FC'),
+	getFBPicture(false, [266117, 439218719434493, 15443424], '8fdd6bf73a7d5eec5be51350d6417f64', '5A335EF0'),
+  getFBPicture(false, [202268, 438940816128950, 1015045861], '362166da2b315dc1e1490a48c3ae7a04', '5A399A5E'),
+	getFBPicture(false, [471223, 438669609489404, 379780058], '065a40ad49d03c3c2394199a9963358d', '5A395B5B'),
+	getFBPicture(false, [458211, 498258963530468, 1637617887], '09b41f39f907f9095889035811ed994f', '5A24D1A7'),
+	getFBPicture(false, [219596, 455967891092909, 1659676419], 'a4dd0596ab2310c120e28d662531ff39', '5A27F6D1')
+];
 
-bot.setPresence({
-  game: {name: "k.help for info | 1.0.0"}
-});
+const catchphrases = [
+  'huh huh huh you\'re so funny `' + user + '`',
+  'it\'s fine',
+  'go fish, `'+user+'`'
+];
 
-var memeArray = ['https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/10322445_736571016365927_6122631404316564888_n.jpg?oh=b32393adff90f64d4c11861a285a87a9&oe=59F14A3C', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/999912_657266644296365_1796786678_n.jpg?oh=665e2b0c0fb6d80772d087b386014b0c&oe=5A250558', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/1471138_657266404296389_1462432710_n.jpg?oh=b1905ba1377f9207343fd1eebfc97ac6&oe=5A2FF8AC', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/1484735_657266347629728_1591046568_n.jpg?oh=99741f36e45fad3300f0497ec96a4bea&oe=5A350E3F', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/1460279_657261414296888_1409941056_n.jpg?oh=44c48ab6188d141c491614c9a42c9b88&oe=5A2A7C58', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/575970_537242709632093_622054354_n.jpg?oh=4f83aa889fa627299149cecd2bf82dfc&oe=59EB15D1','https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/578620_536201723069525_1049133043_n.jpg?oh=975d06a25e364ddb1602d4db889b0451&oe=5A2A572B',
-'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/600190_535790019777362_864278213_n.jpg?oh=7eeeedc214f6b79892538ad40de5ac70&oe=5A38ABD6', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/644333_534981119858252_2023321938_n.jpg?oh=92668ebd73bad5f35a12ba0463dfdb49&oe=5A31AF7F', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/295657_534629519893412_1735171618_n.jpg?oh=818ce513ec886d6c4e72de2b64d63094&oe=5A2D651A', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t31.0-8/458211_498258963530468_1637617887_o.jpg?oh=09b41f39f907f9095889035811ed994f&oe=5A24D1A7', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t31.0-8/219596_455967891092909_1659676419_o.jpg?oh=a4dd0596ab2310c120e28d662531ff39&oe=5A27F6D1', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/224637_449150045108027_1829597251_n.jpg?oh=9a1dedc60bb94aedd5f1763996dd989c&oe=5A2D7DF0', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/553471_441861062503592_643853451_n.jpg?oh=bfaf06a08ae8d1630ae95fa931123048&oe=5A29D333',
- 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/602526_441526475870384_907188007_n.jpg?oh=9b4164f5a64d818f6f48eec9a90d0e8c&oe=5A1B2185', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/547738_441187152570983_1626969497_n.jpg?oh=ad1a9805b6e966a326f63a117046eadd&oe=5A299526', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t31.0-8/330822_440572679299097_604568631_o.jpg?oh=dc20ef0b403d30f9c5e20407e32d770c&oe=5A3205A6', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t31.0-8/334113_440237609332604_802765931_o.jpg?oh=820aae37e5b0d63679d704d94a2887b2&oe=5A1F21E2', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t31.0-8/339383_439894406033591_1104072709_o.jpg?oh=2c4e6d472de9f811adbb304b87f65b62&oe=5A1F52FC', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/389098_439524819403883_1192391394_n.jpg?oh=5947d4035202a9cf4fafc60c4d77e548&oe=5A2811A8', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t31.0-8/266117_439218719434493_15443424_o.jpg?oh=8fdd6bf73a7d5eec5be51350d6417f64&oe=5A335EF0',
- 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t31.0-8/202268_438940816128950_1015045861_o.jpg?oh=362166da2b315dc1e1490a48c3ae7a04&oe=5A399A5E', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t31.0-8/471223_438669609489404_379780058_o.jpg?oh=065a40ad49d03c3c2394199a9963358d&oe=5A395B5B', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/409683_438662036156828_612090146_n.jpg?oh=19d0a243e9ec8385c008327cac91bc4f&oe=59F256C4', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/580857_438633049493060_1151942041_n.jpg?oh=8dbf5b42b6b8ef0d23f84bc7db2a7e6d&oe=5A1BFE81', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/487190_438337252855973_1308119772_n.jpg?oh=26c05a7f52a086c996aa0ac7f266e823&oe=5A1D707B', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/534513_438333289523036_1322988843_n.jpg?oh=3c2818e5f537fcb8b963dee9db3f65cc&oe=5A294A44', 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/251812_438330179523347_2051057899_n.jpg?oh=5d9c2c37633d54f49033c220b1529b11&oe=5A2B706B']
+/*
+ *  Main function
+ *
+ */
 
-bot.on('message', function(user, userID, channelID, message, event) {
-    switch (message) {
-      case 'k.help':
-        bot.simulateTyping(channelID);
-        bot.sendMessage({
-          to: channelID,
-          message: "",
-          embed: {
-            footer: {
-              text: "Type k.talk and I'll respond just like the real Keefe.\tType k.meme for a spicy Keefe meme."
-            },
-            image:
-            {
-              url: 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/580926_438288669527498_1776737550_n.jpg?oh=b73fc1b6e6d20031b13c148bcf822cbe&oe=59EFBC2D',
-              width: 100,
-              height: 100
-            },
-            title: "Hey there, I'm robo-keefe",
-            url: ''
-          }
-        })
-        break;
-      case 'k.talk':
-        bot.simulateTyping(channelID);
-        var responses = ['huh huh huh you\'re so funny `' + user + '`', 'it\'s fine', 'go fish']
-        var response = responses[Math.floor(Math.random()*responses.length)];
-        bot.sendMessage({
-            to: channelID,
-            message: response
-        });
-        break;
-      case 'k.meme':
-        bot.simulateTyping(channelID);
-        var imgURL = memeArray[Math.floor(Math.random()*memeArray.length)];
-        bot.sendMessage({
-          to: channelID,
-          embed: {
-            image: {
-                url: imgURL
-            }
-          }
-        })
-        break;
-      default:
+function main() {
+  // Initialize the bot
+  let bot = new Discord.Client({
+      autorun: true,
+      token: "MzQ3MDk5OTI1MzQ5MjY5NTI0.DHTeBA.5SXpt3kCbQkwlpLmJlA0Q_BTatQ"
+  });
+  bot.setPresence({
+    game: {
+      name: "k.help for info | 1.0.0"
     }
+  });
 
-});
+  // Define handlers for the bot
+  bot.on('ready', botReady);
+  bot.on('message', botMessage);
+}
+
+/*
+ *  Event Handler Functions
+ *
+ */
+
+function botReady(event) {
+  let message = `Logged in as ${bot.username} - ${bot.id}\n`;
+  console.log(message);
+  return message;
+}
+
+// handler for when the bot detects a message in a channel it's subscribed to
+function botMessage(user, userID, channelID, message, event) {
+  let functions = {
+    help: keefeHelp,
+    talk: keefeTalk,
+    meme: keefeMeme
+  }
+  let fn = message.split('.')[1];
+  console.log('What AM I???', this);
+  this.simulateTyping(channelID);
+  let messageToSend = functions[fn](user, userID, channelID, message, event);
+  this.sendMessage(messageToSend);
+}
+
+/*
+ *  Helper Functions
+ *
+ */
+
+// kinda a mess, tries to make the meme array less ugly... doesn't succeed
+function getFBPicture(is_t_one_zero_nine, numbers, oh, oe) {
+  let t_version = is_t_one_zero_nine ? '1.0-9' : '31.0-8';
+  let jpg_suffix = is_t_one_zero_nine ? 'n' : 'o';
+  let jpg_prefix = numbers.join('_');
+  let jpg = `${jpg_prefix}_${jpg_suffix}.jpg`
+  
+  return `https://scontent.fsnc1-2.fna.fbcdn.net/v/t${t_version}/${jpg}?oh=${oh}&oe=${oe}`;
+}
+
+/*
+ *  Keefe API functions:
+ *
+ *  Returns: A discord message object
+ *
+ *  Params: User, userID, channelID, message, and event that triggered the message handling function
+ *
+ */
+
+function keefeTalk(user, userID, channelID, message, event) {
+  var response = catchphrases[Math.floor(Math.random()*catchphrases.length)];
+  return {
+      to: channelID,
+      message: response
+  };
+}
+
+function keefeMeme(user, userID, channelID, message, event) {
+  let imgURL = memeArray[Math.floor(Math.random()*memeArray.length)];
+  return {
+    to: channelID,
+    embed: {
+      image: {
+          url: imgURL
+      }
+    }
+  };
+}
+
+function keefeHelp(user, userID, channelID, message, event) {
+  return {
+    to: channelID,
+    message: 
+    `
+    **__k.talk__** - I'll respond just like the real Keefe.
+    **__k.meme__** - I'll drop a spicy Keefe meme.
+    **__k.help__** - I'll display this helpful dialog
+    `,
+    embed: {
+      image: {
+        url: 'https://scontent.fsnc1-2.fna.fbcdn.net/v/t1.0-9/580926_438288669527498_1776737550_n.jpg?oh=b73fc1b6e6d20031b13c148bcf822cbe&oe=59EFBC2D',
+        width: 100,
+        height: 100
+      },
+      title: "I'm robo-keefe, and I approve this message",
+      url: ''
+    }
+  };
+}

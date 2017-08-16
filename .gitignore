@@ -1,0 +1,7 @@
+#
+# keefe-bot git ignore file
+#
+
+# vim swap files
+*.swp
+*.swo
